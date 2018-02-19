@@ -126,6 +126,11 @@ class Flask(_PackageBoundObject):
     .. versionadded:: 0.13
        The `host_matching` and `static_host` parameters were added.
 
+    .. versionadded:: 1.0
+       The `subdomain_matching` parameter was added.  Subdomain matching
+       needs to be enabled manually now.  Setting `SERVER_NAME` does not
+       implicitly enable it.
+
     :param import_name: the name of the application package
     :param static_url_path: can be used to specify a different path for the
                             static files on the web.  Defaults to the name
@@ -339,6 +344,7 @@ class Flask(_PackageBoundObject):
         static_folder='static',
         static_host=None,
         host_matching=False,
+        subdomain_matching=False,
         template_folder='templates',
         instance_path=None,
         instance_relative_config=False,
@@ -522,6 +528,7 @@ class Flask(_PackageBoundObject):
         self.url_map = Map()
 
         self.url_map.host_matching = host_matching
+        self.subdomain_matching = subdomain_matching
 
         # tracks internally if the application already handled at least one
         # request.
@@ -1963,8 +1970,12 @@ class Flask(_PackageBoundObject):
            URL adapter is created for the application context.
         """
         if request is not None:
-            return self.url_map.bind_to_environ(request.environ,
+            rv = self.url_map.bind_to_environ(request.environ,
                 server_name=self.config['SERVER_NAME'])
+            # If subdomain matching is not enabled (which is the default
+            if not self.subdomain_matching:
+                rv.subdomain = self.url_map.default_subdomain
+            return rv
         # We need at the very least the server name to be set for this
         # to work.
         if self.config['SERVER_NAME'] is not None:
