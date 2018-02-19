@@ -1831,6 +1831,23 @@ def test_subdomain_matching_with_ports():
     assert rv.data == b'index for mitsuhiko'
 
 
+def test_subdomain_matching_behavior():
+    for matching in False, True:
+        app = flask.Flask(__name__, subdomain_matching=matching)
+        app.config['SERVER_NAME'] = 'localhost.localdomain:3000'
+        client = app.test_client()
+
+        @app.route('/')
+        def index():
+            return 'matched without subdomain'
+
+        rv = client.get('/', 'http://127.0.0.1:3000/')
+        if matching:
+            assert rv.status_code == 404
+        else:
+            assert rv.data == b'matched without subdomain'
+
+
 def test_multi_route_rules(app, client):
     @app.route('/')
     @app.route('/<test>/')
