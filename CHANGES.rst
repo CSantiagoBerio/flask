@@ -137,6 +137,8 @@ unreleased
   development server over HTTPS. (`#2606`_)
 - Added :data:`SESSION_COOKIE_SAMESITE` to control the ``SameSite``
   attribute on the session cookie. (`#2607`_)
+- Subdomain matching is disabled by default now.  It can be turned on by
+  passing ``subdomain_matching=True`` to the Flask constructor.
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
 .. _#1421: https://github.com/pallets/flask/issues/1421

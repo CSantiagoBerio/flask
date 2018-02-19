@@ -1973,6 +1973,9 @@ class Flask(_PackageBoundObject):
             rv = self.url_map.bind_to_environ(request.environ,
                 server_name=self.config['SERVER_NAME'])
             # If subdomain matching is not enabled (which is the default
+            # we put back the default subdomain in all cases.  This really
+            # should be the default in Werkzeug but it currently does not
+            # have that feature.
             if not self.subdomain_matching:
                 rv.subdomain = self.url_map.default_subdomain
             return rv
